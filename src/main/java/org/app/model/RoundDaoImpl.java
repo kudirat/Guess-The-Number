@@ -21,14 +21,16 @@ public class RoundDaoImpl implements RoundDao{
     ServiceLayerImpl serviceLayer;
 
     @Override
-    public Round addRound(int gameId) {
-        Round round = new Round();
-        final String INSERT_ROUND = "INSERT INTO rounds(roundid, guessid, guess, finished) VALUES(?,?,?,?)";
+    public Round addRound(Round round) {
+        //Round round = new Round();
+        final String INSERT_ROUND = "INSERT INTO rounds(roundid, gameid, guess, guessresult, finished, guesstime) VALUES(?,?,?,?,?,?)";
         jdbc.update(INSERT_ROUND,
                 round.getId(),
                 round.getGameid(),
                 round.getGuess(),
-                round.getFinished());
+                round.getGuessResult(),
+                round.getFinished(),
+                round.getRoundTime());
 
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         round.setId(newId);

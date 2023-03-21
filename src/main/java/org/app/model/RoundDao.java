@@ -11,7 +11,7 @@ import java.util.List;
 public interface RoundDao {
 
 
-   Round addRound(int gameId);
+   Round addRound(Round round);
 
    List<Round> getAllRounds();
 

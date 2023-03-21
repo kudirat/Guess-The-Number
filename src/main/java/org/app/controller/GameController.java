@@ -36,10 +36,9 @@ public class GameController {
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/begin")
-    public String[] beginGame(){
-      String[] currGame = serviceLayer.beginGame();
-
-      return currGame;
+    public int beginGame(){
+      //String[] currGame = serviceLayer.beginGame();
+      return serviceLayer.beginGame();
     }
 
     /**
@@ -77,12 +76,8 @@ public class GameController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/guess")
-    public String[] makeGuess(@RequestBody Round round){
-        int gameid = io.readInt("Enter the game id");
-        int guess = io.readInt("Please enter a 4 digit number.");
-       String[] roundInfo = serviceLayer.makeGuess(guess, gameid);
-
-        return roundInfo;
+    public Round makeGuess(@RequestBody Round round){
+        return serviceLayer.makeGuess(round);
     }
 
 }

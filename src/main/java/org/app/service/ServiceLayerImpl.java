@@ -74,11 +74,11 @@ public class ServiceLayerImpl {
      * Start the game through game dao
      * @return
      */
-    public String[] beginGame(){
+    public int beginGame(){
         int answer = generateAnswer();
         Game newGame = gameDao.addGame(answer);
-        String[] currGame = {String.valueOf(newGame.getId()), newGame.getStatus(), newGame.getTime()};
-        return currGame;
+        //String[] currGame = {String.valueOf(newGame.getId()), newGame.getStatus()};
+        return newGame.getId();
     }
 
     /**
@@ -97,7 +97,7 @@ public class ServiceLayerImpl {
 
     public String[] getGameById(int gameid){
         Game game = gameDao.getGameById(gameid);
-        String[] currGame = {String.valueOf(game.getId()), game.getStatus(), game.getTime()};
+        String[] currGame = {String.valueOf(game.getId()), game.getStatus()};
         return currGame;
     }
 
@@ -110,26 +110,28 @@ public class ServiceLayerImpl {
    // calculate the results of the guess and
     //check if guess is correct
     // mark the game finished and return round object with results filled in
-    public String[] makeGuess(int guess, int gameid){
-        Game game = gameDao.getGameById(gameid);
+    public Round makeGuess(Round round){
+        Game game = gameDao.getGameById(round.getGameid());
+        int guess = round.getGuess();
         Boolean finished = false;
-
         int answer = game.getAnswer();
-        //get the exaact and partial matches
-        int[] result_arr = checkGuess(gameid, guess);
+
+        //get the exact and partial matches
+        int[] result_arr = checkGuess(answer, guess);
         String result = getResult(result_arr);
+        round.setGuessResult(result);
         //if the sum of the exact matches is 4, then mark the game as finished
-        if(result_arr[0] == 4){
+        if(result.charAt(2) == 4){
             game.setStatus("Finished");
             finished = true;
         }
 
        //Make a Round object and return it with the results filled in
-        Round round = roundDao.addRound(gameid);
-        round = roundDao.updateRound(round, gameid, guess, finished);
+        round = roundDao.addRound(round);
+        //round = roundDao.updateRound(round, gameid, guess, finished);
 
         String[] roundInfo = {String.valueOf(round.getId()), String.valueOf(round.getGameid()), String.valueOf(round.getGuess()), String.valueOf(round.getFinished())};
-        return roundInfo;
+        return round;
     }
 
 
@@ -146,34 +148,40 @@ public class ServiceLayerImpl {
     /**
      * Checks if a guess is correct
      */
-    public int[] checkGuess(int guess, int gameId){
+    public int[] checkGuess(int answer, int guess){
         int partials = 0;
         int exact = 0;
 
-        //get the current game
-        Game game = gameDao.getGameById(gameId);
-        int answer = game.getAnswer();
-
-        //put them in arrays
+        Set<Character> dupsCheck = new HashSet<>();
+        //convert the ints into Strings and then into arrays
         String answer_str = Integer.toString(guess);
         String guess_str = Integer.toString(answer);
 
-        int[] answer_arr = new int[answer_str.length()];
-        int[] guess_arr = new  int[guess_str.length()];
+//        char[] answer_arr = answer_str.toCharArray();
+//        char[] guess_arr = guess_str.toCharArray();
 
-        //loop through to check for an exact match (when user guesses the correct digit in the correct pos)
-        //loop through to check for a partial match (correct digit in the wrong position)
-        for(int i = 0; i < answer_arr.length; i++){
-            for(int j = 0; j < guess_arr.length; j++){
-                if(guess_arr[i] == answer_arr[j]){
-                    exact++;
-                }
-                else{
-                    partials++;
-                }
+
+//        int i = 0;
+//        int j = 0;
+
+//        for(int i = 0; i <= 4; i++){
+//            char ch = guess_str.charAt(i);
+//            char ch_answer = answer_str.charAt(i);
+//            if(ch_answer == ch){
+//                exact++;
+//            }
+//            else if (answer_str.contains(ch + " ")){
+//                partials++;
+//            }
+//        }
+
+        for(int i= 0;i < 4;i++){
+            if(guess_str.charAt(i) == answer_str.charAt(i)){
+                exact++;
+            }else if(answer_str.contains(guess_str.charAt(i)+"")){
+                partials++;
             }
         }
-
 
         int[] results_arr = {exact, partials};
 

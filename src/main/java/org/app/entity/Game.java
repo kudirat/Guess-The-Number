@@ -8,7 +8,6 @@ public class Game {
     private int id;
     private int answer;
     private String status;
-    private String time;
 
     public int getId() {
         return id;
@@ -33,18 +32,6 @@ public class Game {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-
-    public String getTime(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        this.time = dtf.format(now);
-        return this.time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     @Override

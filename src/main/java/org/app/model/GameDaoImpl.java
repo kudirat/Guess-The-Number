@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,12 +28,12 @@ public class GameDaoImpl implements GameDao{
             game.setId(rs.getInt("gameid"));
             game.setAnswer(rs.getInt("answer"));
             game.setStatus(rs.getString("gamestatus"));
-            game.setTime(String.valueOf(rs.getString("gametime")));
             return game;
         }
     }
 
     @Override
+    @Transactional
     public Game addGame(int answer){
         Game game = new Game();
         //generates an answer
@@ -40,12 +41,11 @@ public class GameDaoImpl implements GameDao{
         game.setAnswer(answer);
         game.setStatus("In Progress");
         // game.getTime();
-        final String INSERT_GAME = "INSERT INTO games(gameid, answer, gamestatus, gametime) VALUES(?,?,?,?)";
+        final String INSERT_GAME = "INSERT INTO games(gameid, answer, gamestatus) VALUES(?,?,?)";
         jdbc.update(INSERT_GAME,
                 game.getId(),
                 game.getAnswer(),
-                game.getStatus(),
-                game.getTime());
+                game.getStatus());
 
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         game.setId(newId);
