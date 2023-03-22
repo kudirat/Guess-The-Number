@@ -20,5 +20,4 @@ public interface RoundDao {
    void deleteRoundById(int roundId);
 
 
-   Round updateRound(Round round, int gameid, int guess, Boolean finished);
 }

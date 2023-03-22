@@ -1,16 +1,17 @@
 package org.app.entity;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Round {
+public class Round implements Comparable<Round>{
     private int id;
     private int gameid;
     private int guess;
     private boolean finished;
 
-    private String roundTime;
+    private LocalDateTime roundTime;
 
     private String guessResult;
     public int getId() {
@@ -47,15 +48,11 @@ public class Round {
         this.finished = finished;
     }
 
-    public String getRoundTime(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        this.roundTime = dtf.format(now);
-        return this.roundTime;
+    public LocalDateTime getRoundTime() {
+        return roundTime;
     }
 
-
-    public void setRoundTime(String roundTime) {
+    public void setRoundTime(LocalDateTime roundTime) {
         this.roundTime = roundTime;
     }
 
@@ -87,5 +84,10 @@ public class Round {
         result = 31 * result + (Objects.hashCode(finished));
 
         return result;
+    }
+
+    @Override
+    public int compareTo(Round round) {
+        return getRoundTime().compareTo(round.getRoundTime());
     }
 }

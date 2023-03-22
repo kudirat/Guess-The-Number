@@ -1,7 +1,6 @@
 package org.app.model;
 
 import org.app.entity.Game;
-import org.app.service.ServiceLayerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -18,7 +16,7 @@ public class GameDaoImpl implements GameDao{
     @Autowired
     JdbcTemplate jdbc;
 
-    List<Game> currGames = new ArrayList<>();
+   // List<Game> currGames = new ArrayList<>();
 
     public static final class GameMapper implements RowMapper<Game> {
 
@@ -49,30 +47,44 @@ public class GameDaoImpl implements GameDao{
 
         int newId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
         game.setId(newId);
-        this.currGames.add(game);
+        //this.currGames.add(game);
         return game;
     }
 
     @Override
     public List<Game> getAllGames() {
-        final String GET_GAMES = "SELECT gameid, answer, gamestatus, gametime FROM games;";
-        this.currGames = jdbc.query(GET_GAMES, new GameMapper());
-        return this.currGames;
+        final String GET_GAMES = "SELECT gameid, answer, gamestatus FROM games;";
+        //this.currGames = jdbc.query(GET_GAMES, new GameMapper());
+        List<Game> currGames = jdbc.query(GET_GAMES, new GameMapper());
+        return currGames;
     }
 
     @Override
     public Game getGameById(int gameid) {
         final String GET_GAME = "SELECT * FROM games WHERE gameid = ?;";
         Game currGame = jdbc.queryForObject(GET_GAME, new GameMapper(), gameid);
+//        if(currGame.getStatus().matches("In Progress")){
+//            currGame.setAnswer(0000);
+//        }
         return currGame;
     }
 
     @Override
     public void deleteGameById(int gameid) {
         final String DELETE_GAME = "DELETE FROM games WHERE gameid = ?;";
-        Game currGame = jdbc.queryForObject(DELETE_GAME, new GameMapper(), gameid);
+        //Game currGame = jdbc.queryForObject(DELETE_GAME, new GameMapper(), gameid);
+        jdbc.update(DELETE_GAME, gameid);
     }
 
+    @Override
+    public void updateGameById(int gameid) {
+        final String UPDATE_GAME = "UPDATE games SET gamestatus = ? WHERE gameid = ?;";
+        //Game currGame = jdbc.queryForObject(UPDATE_GAME, new GameMapper(), "Finished", gameid);
+        String finished = "Finished";
+        jdbc.update(UPDATE_GAME, finished, gameid);
+
+        //return currGame;
+    }
 
 
 

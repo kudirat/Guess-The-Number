@@ -80,4 +80,11 @@ public class GameController {
         return serviceLayer.makeGuess(round);
     }
 
+    @DeleteMapping("/game/{gameid}")
+    public void deleteGameById(@PathVariable("gameid") int gameid){
+        serviceLayer.deleteByGameId(gameid);
+        //return currGame;
+    }
+
+
 }

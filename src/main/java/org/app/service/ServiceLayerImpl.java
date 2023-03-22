@@ -62,8 +62,13 @@ public class ServiceLayerImpl {
 
         //append the answer to a string
         String answer = "";
-        for(int i = 0; i <= 3; i++){
+        for(int i = 0; i < 4; i++){
             answer += nums.get(i).toString();
+        }
+
+        //if length is greater than 4, call the method again
+        if(answer.length() > 4){
+            generateAnswer();
         }
 
         //convert to int and return
@@ -97,8 +102,25 @@ public class ServiceLayerImpl {
 
     public String[] getGameById(int gameid){
         Game game = gameDao.getGameById(gameid);
-        String[] currGame = {String.valueOf(game.getId()), game.getStatus()};
-        return currGame;
+
+        List<Round> currRounds = roundDao.getAllRoundForGame(gameid);
+
+        for(Round round: currRounds){
+            if(round.getFinished() == true){
+                game.setStatus("Finished");
+                gameDao.updateGameById(gameid);
+            }
+        }
+
+
+        if(game.getStatus().matches("Finished")){
+           // game.setAnswer(0000);
+            return new String[]{String.valueOf(game.getId()), String.valueOf(game.getAnswer()), game.getStatus()};
+        }
+        else{
+            return new String[]{String.valueOf(game.getId()), game.getStatus()};
+
+        }
     }
 
     public List<Round> getGameRounds(int gameid){
@@ -106,10 +128,11 @@ public class ServiceLayerImpl {
         return roundsForGame;
     }
 
-    //pass guess and gameid in as json,
-   // calculate the results of the guess and
-    //check if guess is correct
-    // mark the game finished and return round object with results filled in
+    /**
+     * pass guess and gameid in as json,
+     * calculate the results of the guess and
+     *  mark the game finished and return round object with results filled in
+     */
     public Round makeGuess(Round round){
         Game game = gameDao.getGameById(round.getGameid());
         int guess = round.getGuess();
@@ -121,16 +144,16 @@ public class ServiceLayerImpl {
         String result = getResult(result_arr);
         round.setGuessResult(result);
         //if the sum of the exact matches is 4, then mark the game as finished
-        if(result.charAt(2) == 4){
+        if(result.charAt(2) == '4'){
             game.setStatus("Finished");
             finished = true;
+            round.setFinished(finished);
         }
 
        //Make a Round object and return it with the results filled in
         round = roundDao.addRound(round);
-        //round = roundDao.updateRound(round, gameid, guess, finished);
 
-        String[] roundInfo = {String.valueOf(round.getId()), String.valueOf(round.getGameid()), String.valueOf(round.getGuess()), String.valueOf(round.getFinished())};
+        //String[] roundInfo = {String.valueOf(round.getId()), String.valueOf(round.getGameid()), String.valueOf(round.getGuess()), String.valueOf(round.getFinished())};
         return round;
     }
 
@@ -139,8 +162,8 @@ public class ServiceLayerImpl {
      * Get result
      */
     public String getResult(int[] arr){
-        int partials = arr[0];
-        int exact = arr[1];
+        int partials = arr[1];
+        int exact = arr[0];
 
         return "e:" + exact + ":p:" + partials;
     }
@@ -154,26 +177,9 @@ public class ServiceLayerImpl {
 
         Set<Character> dupsCheck = new HashSet<>();
         //convert the ints into Strings and then into arrays
-        String answer_str = Integer.toString(guess);
-        String guess_str = Integer.toString(answer);
+        String answer_str = Integer.toString(answer);
+        String guess_str = Integer.toString(guess);
 
-//        char[] answer_arr = answer_str.toCharArray();
-//        char[] guess_arr = guess_str.toCharArray();
-
-
-//        int i = 0;
-//        int j = 0;
-
-//        for(int i = 0; i <= 4; i++){
-//            char ch = guess_str.charAt(i);
-//            char ch_answer = answer_str.charAt(i);
-//            if(ch_answer == ch){
-//                exact++;
-//            }
-//            else if (answer_str.contains(ch + " ")){
-//                partials++;
-//            }
-//        }
 
         for(int i= 0;i < 4;i++){
             if(guess_str.charAt(i) == answer_str.charAt(i)){
@@ -190,4 +196,7 @@ public class ServiceLayerImpl {
     }
 
 
+    public void deleteByGameId(int gameid){
+         gameDao.deleteGameById(gameid);
+    }
 }
