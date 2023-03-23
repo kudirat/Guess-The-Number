@@ -19,6 +19,7 @@ public class ServiceLayerImpl {
     RoundDaoImpl roundDao;
 
     /**
+     * Ignore: Method not needed
      * Retrieves Finished Games from list of games in database
      * @param currgames
      * @return

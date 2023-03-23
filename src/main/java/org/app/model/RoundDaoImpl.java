@@ -1,5 +1,6 @@
 package org.app.model;
 
+import org.app.entity.Game;
 import org.app.entity.Round;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,7 +44,10 @@ public class RoundDaoImpl implements RoundDao{
      */
     @Override
     public List<Round> getAllRounds() {
-        return null;
+        final String GET_Rounds = "SELECT * FROM rounds;";
+        //this.currGames = jdbc.query(GET_GAMES, new GameMapper());
+        List<Round> currRounds = jdbc.query(GET_Rounds, new RoundMapper());
+        return currRounds;
     }
 
 
