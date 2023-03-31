@@ -14,4 +14,4 @@ These are the current REST endpoints I created:
 
 I included a Service layer to manage the game rules, such as generating initial answers for a game and calculating the results of a guess.
 
-All of my public DAO interface methods have been tested thoroughly.
+I have also written tests for my public DAO interface methods.
